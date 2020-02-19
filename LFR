@@ -1,0 +1,135 @@
+#define root_two 1.41421
+
+const int m=11,n=11;
+float MAZE[m][n];
+
+int goal[2]= {0,0};
+int curr[2]= {0,0};
+
+int map_maze(int, int, float);
+
+void setup() {
+  // put your setup code here, to run once:
+  //begin the serial comm
+  Serial.begin(9600);
+  Serial.println("bla bla on Serial");
+  
+  //setup the points 
+  goal[0] = 2;
+  goal[1] = 2;
+  //initialize the array
+  for (int i = 0; i < m; i++)
+  {
+    for (int j = 0; j < n; j++)
+    {
+      MAZE[i][j] = 100;
+    }
+  }
+  //randomly set up the obstacles:
+  
+  //MAZE[goal[0]][goal[1]] = 0;
+  //print the intitial array:
+  for (int i = 0; i < m; i++)
+  {
+    for (int j = 0; j < n; j++)
+    {
+      char buf[5];
+      //sprintf(buf, "%3d", MAZE[i][j]);
+      //Serial.print(buf);
+      //printf("%6.2f", MAZE[i][j]);
+    }
+    //Serial.println("");
+    //printf("\n");
+  }
+  //Serial.println("");
+  //printf("\n");
+  //--------------------------------------------//
+  
+  long tick = 0, tock = 0;
+  //tick = time(NULL);
+  tick = millis();
+  //map the maze!
+  map_maze(goal[0], goal[1], 0);
+  
+  //tock = time(NULL);
+  tock = millis();
+  //printf("time taken = %ld\n", tock - tick);
+  Serial.print(tock - tick);
+  Serial.println("ms");
+  //return 0;
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+}
+int map_maze(int curr_x, int curr_y, float dist)
+{
+  //printf("%d, %d, %d\n", curr_x, curr_y, dist);
+  //if current point is out of bounds, leave it
+  if(curr_x >= m || curr_y >= n || curr_x < 0 || curr_y < 0)
+  {
+    //do nothing
+    //printf("early exit\n");
+    return 0;
+  }
+  //if in bounds
+  else 
+  {
+    //print the current posn and distances:
+    //printf("curr_dist= %f, x = %d, y = %d\n", dist, curr_x, curr_y);
+    //first update the maze distances:
+    if(MAZE[curr_x][curr_y] <= dist)
+    {
+      //printf("NOT THE SHORTEST PATH.LEAVING\n");
+      return 0;
+    }
+    else if(MAZE[curr_x][curr_y] > dist)
+    {
+      MAZE[curr_x][curr_y] = dist;
+    }
+
+    //diagonal paths first!
+    if(MAZE[curr_x + 1][curr_y + 1] != 200 )//if front and right possible
+      map_maze(curr_x + 1, curr_y + 1, dist + root_two);
+    if(MAZE[curr_x + 1][curr_y - 1] != 200)//if back and right possible
+      map_maze(curr_x + 1, curr_y - 1, dist + root_two);
+    if(MAZE[curr_x - 1][curr_y + 1] != 200 )//if front and left possible
+      map_maze(curr_x - 1, curr_y + 1, dist + root_two);
+    if(MAZE[curr_x + 1][curr_y + 1] != 200)//if back and left possible
+      map_maze(curr_x - 1, curr_y - 1, dist + root_two);  
+    // rectangular dirns:
+    if(MAZE[curr_x - 1][curr_y] != 200)//if left is possible
+      map_maze(curr_x - 1, curr_y, dist + 1);
+    if(MAZE[curr_x + 1][curr_y] != 200)//if right is possible
+      map_maze(curr_x + 1, curr_y, dist + 1);
+    if(MAZE[curr_x][curr_y + 1] != 200)//if front is possible
+      map_maze(curr_x, curr_y + 1, dist + 1);
+    if(MAZE[curr_x][curr_y - 1] != 200)//if back is possible
+      map_maze(curr_x, curr_y - 1, dist + 1); 
+    
+  } 
+
+  //print the whole maze to debug:
+  /*
+  for (int i = 0; i < m; i++)
+  {
+    for (int j = 0; j < n; j++)
+    {
+      char buf[5];
+      //sprintf(buf, "%3d", MAZE[i][j]);
+      //Serial.print(buf);
+      if (MAZE[i][j] == 200)
+      {
+        printf("  *  ");
+        continue;
+      }
+      printf("%6.2f", MAZE[i][j]);
+    }
+    //Serial.println("");
+    printf("\n");
+  }
+  //Serial.println("");
+  printf("\n");
+  */
+  return 1;
+}
