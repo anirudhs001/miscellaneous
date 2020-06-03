@@ -42,6 +42,7 @@ void setup(){
 }
 beep boop
 code for push button
+
 ` Now since these switches undergo an existential crisis while we click ‘em, we are going to delay(arduino way to say: waiting for a while) and recheck if the button is really sure it was clicked.
 
 ` 
